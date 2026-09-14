@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Claude Code statusline (single line):
-#   [Opus] 🤖 explore×2, plan, ⏳review +3 | 📁 my-app | 🌿 feature/auth | ███░░░░░░░ 42% | $0.08 | 🕐 7m 3s
+#   [Opus] 🤖 explore×2, plan, ⏳review +3 | 📁 my-app | 🌿 feature/auth | 🧠 ███░░░░░░░ 42% | ⚡ 5h █░░░░ 23% (2h14m) · 7d ██░░░ 41%
 
 input=$(cat)
 
@@ -9,8 +9,10 @@ eval "$(printf '%s' "$input" | jq -r '
   @sh "agent=\(.agent.name // "")",
   @sh "tr=\(.transcript_path // "")",
   @sh "dir=\(.workspace.current_dir // "")",
-  @sh "cost=\(.cost.total_cost_usd // 0)",
-  @sh "dur=\(.cost.total_duration_ms // 0)",
+  @sh "r5=\(.rate_limits.five_hour.used_percentage // -1 | floor)",
+  @sh "r5at=\(.rate_limits.five_hour.resets_at // 0)",
+  @sh "r7=\(.rate_limits.seven_day.used_percentage // -1 | floor)",
+  @sh "r7at=\(.rate_limits.seven_day.resets_at // 0)",
   @sh "pct=\(
     (.context_window.used_percentage
      // (if (.context_window.context_window_size // 0) > 0
@@ -21,7 +23,44 @@ eval "$(printf '%s' "$input" | jq -r '
 
 cyan=$'\033[36m'; grn=$'\033[38;5;46m'; dkgrn=$'\033[38;5;28m'
 yel=$'\033[33m'; wht=$'\033[37m'; mag=$'\033[35m'; bmag=$'\033[1;95m'; rst=$'\033[0m'
+red=$'\033[31m'; dim=$'\033[38;5;238m'
 sep=" ${wht}|${rst} "
+
+# --------------------------------------------------------------- helpers -----
+# bar PCT CELLS FILL EMPTY -> "███░░"
+bar() {
+  local pct=$1 cells=$2 fill=$3 empty=$4 i n out
+  case "$pct" in (*[!0-9]*|'') pct=0 ;; esac
+  [ "$pct" -gt 100 ] && pct=100
+  n=$(( (pct * cells + 50) / 100 ))          # round to nearest cell
+  out="$fill"
+  for ((i = 0; i < n; i++)); do out+="█"; done
+  out+="$empty"
+  for ((i = n; i < cells; i++)); do out+="░"; done
+  printf '%s%s' "$out" "$rst"
+}
+
+# lim_color PCT -> green <50, yellow 50-79, red 80+
+lim_color() {
+  local p=$1
+  case "$p" in (*[!0-9]*|'') p=0 ;; esac
+  if   [ "$p" -ge 80 ]; then printf '%s' "$red"
+  elif [ "$p" -ge 50 ]; then printf '%s' "$yel"
+  else                       printf '%s' "$grn"
+  fi
+}
+
+# fmt_left EPOCH -> "2h14m" / "14m" / "<1m" / "" when 0, absent or already past
+fmt_left() {
+  local at=$1 rem
+  case "$at" in (*[!0-9]*|''|0) return ;; esac
+  rem=$(( at - $(date +%s) ))
+  [ "$rem" -le 0 ] && return
+  if   [ "$rem" -ge 3600 ]; then printf '%dh%02dm' "$(( rem / 3600 ))" "$(( rem % 3600 / 60 ))"
+  elif [ "$rem" -ge 60 ];   then printf '%dm'      "$(( rem / 60 ))"
+  else                           printf '<1m'
+  fi
+}
 
 # ---------------------------------------------------------------- agents -----
 # Scan a transcript on stdin for Agent/Task tool_use blocks -> "type<TAB>id".
@@ -136,27 +175,21 @@ if branch=$(git -C "${dir:-.}" branch --show-current 2>/dev/null) && [ -n "$bran
   out+="${sep}🌿 ${wht}${branch}${rst}"
 fi
 
-# context bar
-cells=10
+# context bar: normalise pct (also printed as text below)
 case "$pct" in (*[!0-9]*|'') pct=0 ;; esac
 [ "$pct" -gt 100 ] && pct=100
-filled=$(( (pct * cells + 50) / 100 ))             # round to nearest cell
 
-bar="${grn}"
-for ((i = 0; i < filled; i++)); do bar+="█"; done
-bar+="${dkgrn}"
-for ((i = filled; i < cells; i++)); do bar+="░"; done
-bar+="${rst}"
+out+="${sep}🧠 $(bar "$pct" 10 "$grn" "$dkgrn") ${wht}${pct}%${rst}"
 
-# elapsed: 12s / 7m 3s / 1h 15m
-secs=$(( dur / 1000 ))
-if   [ "$secs" -ge 3600 ]; then elapsed="$(( secs / 3600 ))h $(( secs % 3600 / 60 ))m"
-elif [ "$secs" -ge 60 ];   then elapsed="$(( secs / 60 ))m $(( secs % 60 ))s"
-else                            elapsed="${secs}s"
+lim=""
+if [ "$r5" -ge 0 ]; then
+  left=$(fmt_left "$r5at")
+  lim="${wht}5h${rst} $(bar "$r5" 5 "$(lim_color "$r5")" "$dim") $(lim_color "$r5")${r5}%${rst}"
+  lim+="${left:+ ${wht}(${left})${rst}}"
 fi
-
-out+="${sep}${bar} ${wht}${pct}%${rst}"
-out+="${sep}${yel}\$$(printf '%.2f' "$cost")${rst}"
-out+="${sep}🕐 ${wht}${elapsed}${rst}"
+if [ "$r7" -ge 0 ]; then
+  lim="${lim:+$lim ${wht}·${rst} }${wht}7d${rst} $(bar "$r7" 5 "$(lim_color "$r7")" "$dim") $(lim_color "$r7")${r7}%${rst}"
+fi
+[ -n "$lim" ] && out+="${sep}⚡ ${lim}"
 
 printf '%s' "$out"
