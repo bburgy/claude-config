@@ -1,0 +1,32 @@
+{
+  "model": "claude-opus-5",
+  "modelSettings": {
+    "claude-opus-5": {}
+  },
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "skipWorkflowUsageWarning": true,
+  "theme": "auto",
+  "voiceEnabled": true,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/require-plan-review.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

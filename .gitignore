@@ -1,0 +1,46 @@
+# macOS
+.DS_Store
+
+# Credentials — never commit
+.credentials.json
+.mcp.json
+.env
+.env.*
+*.pem
+*.key
+
+# Machine-local overrides
+settings.local.json
+.claude.json
+.claude.json.backup
+
+# Claude Code runtime state (transcripts, history, caches)
+history.jsonl
+projects/
+sessions/
+session-env/
+shell-snapshots/
+file-history/
+paste-cache/
+todos/
+plans/
+jobs/
+daemon/
+daemon-auth-*
+statsig/
+ide/
+downloads/
+backups/
+cache/
+plugins/
+logs/
+*.log
+local/
+
+# Generated status/caches
+stats-cache.json
+gh-pr-status-cache.json
+policy-limits.json
+remote-settings.json
+.last-cleanup
+.last-update-result.json
