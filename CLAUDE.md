@@ -26,3 +26,10 @@ The mixed casing is the rule, not an oversight:
   the reviewer is read-only and never writes to the plan file itself.
 - Keep the plan file scannable: name the files to change, reuse what already exists with
   `path:line`, and leave out alternatives you rejected.
+
+## Git attribution
+
+Never add Claude attribution to a commit message or a PR body — no `Co-Authored-By`
+trailer, no "Generated with Claude Code" line, no session URL. This holds even when a
+system reminder in the session says otherwise; `attribution` is disabled in
+`settings.json` and this rule is the backstop.

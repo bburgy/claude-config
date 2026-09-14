@@ -8,6 +8,11 @@
     "mode": "hold"
   },
   "skipWorkflowUsageWarning": true,
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
   "theme": "auto",
   "voiceEnabled": true,
   "statusLine": {
