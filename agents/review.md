@@ -83,7 +83,7 @@ You can call other agents, and you should — delegating is cheaper and better t
 
 The dividing line: **you read the governing rule documents yourself** — the diff, the applicable `SKILL.md` files, `CLAUDE.md`, `AGENTS.md`, and the `docs/` markdown that bears on the change. **Everything else is fetched for you.** `Explore` locates, fetches and reports; the reading that forms an opinion stays with you.
 
-Never spawn a copy of yourself, and never call `build` or `test`: you do not fix code and you do not write tests.
+Never spawn a copy of yourself, and never call `build` or `test-runner`: you do not fix code and you do not write tests.
 
 ## Do not manufacture findings
 

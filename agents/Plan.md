@@ -26,7 +26,7 @@ Return the plan as text in this shape:
 
 ## Write for an executor that will not reason around gaps
 
-Your plan is handed to a cheaper, less capable implementation agent (`build`) and to a test agent. They will follow it literally. They will not infer your intent, re-derive a decision you left open, or go exploring to fill a hole. Anything you leave vague either stops them or gets guessed wrong.
+Your plan is handed to cheaper, less capable agents — `build` for implementation and `test-runner` for tests. They will follow it literally. They will not infer your intent, re-derive a decision you left open, or go exploring to fill a hole. Anything you leave vague either stops them or gets guessed wrong.
 
 So the plan must be **self-sufficient**: someone who has not read the code should be able to execute it from your text alone.
 
@@ -35,7 +35,7 @@ So the plan must be **self-sufficient**: someone who has not read the code shoul
 - **Order the steps so each one is independently completable**, and say what each step leaves in a working state. If step 3 cannot compile until step 4 lands, say so explicitly.
 - **Spell out the seams.** Signatures of anything new, where it gets registered or injected, which existing call sites change, what the data or the payload looks like before and after.
 - **Say what NOT to touch.** Adjacent code that looks wrong but is out of scope, patterns that must not be introduced, files the executor should leave alone.
-- **Hand the test agent its own brief**: which behaviours need covering, at which level (unit / integration / system), and the edge cases that matter — not "add tests".
+- **Hand `test-runner` its own brief**: which behaviours need covering, at which level (unit / integration / system), and the edge cases that matter — not "add tests". It runs on a small model and will not infer the level, so state it.
 - **Give exact verification commands**, copy-pasteable, including the narrowing filters for a single suite.
 - **Isolate what you could not decide.** Anything genuinely unresolved goes in **Risks / open questions**, never buried inside a step as a vague instruction. A step must never contain a question.
 
