@@ -1,25 +1,10 @@
 {
-  "model": "claude-opus-5",
-  "modelSettings": {
-    "claude-opus-5": {}
-  },
-  "voice": {
-    "enabled": true,
-    "mode": "hold"
-  },
-  "skipWorkflowUsageWarning": true,
   "attribution": {
     "commit": "",
     "pr": "",
     "sessionUrl": false
   },
-  "theme": "auto",
-  "voiceEnabled": true,
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/statusline.sh",
-    "padding": 0
-  },
+  "model": "claude-opus-5",
   "hooks": {
     "PreToolUse": [
       {
@@ -33,5 +18,31 @@
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0,
+    "refreshInterval": 60
+  },
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "medium"
+    }
+  },
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "skipWorkflowUsageWarning": true,
+  "theme": "auto",
+  "voiceEnabled": true,
+  "extraKnownMarketplaces": {
+    "dotnet-agent-skills": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/dotnet/skills.git"
+      }
+    }
   }
 }
