@@ -21,10 +21,15 @@ fi
 
 [[ -f "$plan_file" ]] || deny "Could not locate the plan file to verify it was reviewed."
 
-if ! grep -qE '^## Plan review' "$plan_file"; then
-  deny "This plan has not been reviewed. Launch the \`review\` agent against ${plan_file}, telling it to ground itself in the project's skills, CLAUDE.md, AGENTS.md and every docs/ folder and to report whether the plan applied them. Then append its report to the plan file under a '## Plan review' heading, including a '**Verdict** — ...' line, and call ExitPlanMode again."
+# Match only outside fenced blocks: a heading or verdict quoted inside the reviewer's
+# report — or inside any example — is that text, not this plan's own claim to have
+# been reviewed.
+plain=$(awk '/^[[:space:]]*```/ { fenced = !fenced; next } !fenced' "$plan_file")
+
+if ! grep -qE '^## Plan review' <<<"$plain"; then
+  deny "This plan has not been reviewed. Launch the \`copilot-review\` agent against ${plan_file}; it runs the plan past GitHub Copilot on a non-Claude model, grounded in the project's skills, CLAUDE.md, AGENTS.md and every docs/ folder. Append its report to the plan file under a '## Plan review' heading, left as the blockquote the script emits, then restate its verdict as an unquoted '**Verdict** — LGTM / needs changes / reject' line. If Copilot is unavailable, fall back to the \`review\` agent and say in that section which reviewer ran."
 fi
 
-if ! grep -qE '^\*\*Verdict\*\*.*(LGTM|needs changes|reject)' "$plan_file"; then
-  deny "The '## Plan review' section in ${plan_file} has no verdict. Append the reviewer's '**Verdict** — LGTM / needs changes / reject' line before exiting plan mode."
+if ! grep -qE '^\*\*Verdict\*\*.*(LGTM|needs changes|reject)' <<<"$plain"; then
+  deny "The '## Plan review' section in ${plan_file} has no verdict outside a code fence. Append the reviewer's '**Verdict** — LGTM / needs changes / reject' line at top level — a verdict inside the quoted report does not count — before exiting plan mode."
 fi
