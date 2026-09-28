@@ -20,7 +20,8 @@ Return the plan as text in this shape:
 
 - **Context** — the problem, why it needs solving, the intended outcome.
 - **Approach** — your single recommended approach in a few sentences. Mention an alternative only if it is genuinely close, and say why you rejected it.
-- **Steps** — ordered, each naming the files to modify and the existing code to reuse (`path:line`). For a pattern repeated across many files, describe it once and give a few representative paths rather than enumerating all of them.
+- **Steps** — ordered, one short line each, naming the file it touches. Scannable by a human in ten seconds. No excerpts, no rationale here.
+- **Build brief** — the executable detail for the same steps, in the same order, inside `<details><summary><strong>Build brief</strong></summary> … </details>`. Everything the "Write for an executor" rules below demand lives here, including the pattern-repeated-across-many-files case: describe it once and give a few representative paths rather than enumerating all of them.
 - **Risks / open questions** — anything that could invalidate the plan, and any decision that is genuinely the caller's to make.
 - **Verification** — the exact commands that prove the change works end to end (build, tests, manual run).
 
@@ -29,6 +30,8 @@ Return the plan as text in this shape:
 Your plan is handed to cheaper, less capable agents — `build` for implementation and `test-runner` for tests. They will follow it literally. They will not infer your intent, re-derive a decision you left open, or go exploring to fill a hole. Anything you leave vague either stops them or gets guessed wrong.
 
 So the plan must be **self-sufficient**: someone who has not read the code should be able to execute it from your text alone.
+
+Self-sufficient means the **Build brief**. The rules below govern that section; `Steps` stays terse. Cut explanation, never decisions — a decision you shorten away is one `build` will guess.
 
 - **Make every decision.** Name the class, the method, the file path, the parameter names and types, the enum values, the config key, the error to throw. Never "choose an appropriate name", "handle errors as needed", "wire it up in the usual way", "update the relevant callers" — decide it, and write the decision down.
 - **Quote what you found.** For every existing thing the executor must use or change, give `path:line` and a short excerpt of the current code, plus what it should become. The executor should not have to search for it.

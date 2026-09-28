@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Claude Code statusline (single line):
-#   [Opus] 🤖 explore×2, plan, ⏳review +3 | 📁 my-app | 🌿 feature/auth | 🧠 ███░░░░░░░ 42% | ⚡ 5h █░░░░ 23% (2h14m) · 7d ██░░░ 41%
+#   [Opus] 🤖 Explore×2, Plan, ⏳review +3 | 📁 my-app | 🌿 feature/auth | 🧠 ███░░░░░░░ 42% | ⚡ 5h █░░░░ 23% (2h14m) · 7d ██░░░ 41%
 
 input=$(cat)
 

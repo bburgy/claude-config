@@ -5,7 +5,6 @@
     "sessionUrl": false
   },
   "model": "claude-opus-5",
-  "outputStyle": "Concise",
   "hooks": {
     "PreToolUse": [
       {
@@ -26,6 +25,15 @@
     "padding": 0,
     "refreshInterval": 60
   },
+  "extraKnownMarketplaces": {
+    "dotnet-agent-skills": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/dotnet/skills.git"
+      }
+    }
+  },
+  "outputStyle": "Concise",
   "modelSettings": {
     "claude-opus-5": {
       "effortLevel": "medium"
@@ -37,13 +45,5 @@
   },
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
-  "voiceEnabled": true,
-  "extraKnownMarketplaces": {
-    "dotnet-agent-skills": {
-      "source": {
-        "source": "git",
-        "url": "https://github.com/dotnet/skills.git"
-      }
-    }
-  }
+  "voiceEnabled": true
 }

@@ -26,6 +26,8 @@ The reviewer is [`copilot-review`](agents/copilot-review.md), which hands the pl
 
 A convention nobody enforces is a suggestion, so the convention and its enforcement ship together. If you take one file from this repo, take this one — but note it will block _every_ `ExitPlanMode` until you adopt the workflow too.
 
+A plan file has two readers and one section each. `## Steps` is the human's: one terse line per step, naming the file it touches. `## Build brief` is the executor's, collapsed inside a `<details>` so it stays out of the way — `path:line` citations, the current code and what it becomes, new signatures, call sites and the test brief. `build` and `test-runner` run on the cheaper models and follow the brief literally, so shortening it is how a decision gets guessed rather than made.
+
 ## Statusline
 
 ![The statusline](docs/statusline.png)

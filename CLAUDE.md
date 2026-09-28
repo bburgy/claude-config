@@ -53,8 +53,12 @@ through other agents and make its read-only contract false.
   unreviewed. The hook cannot tell the two apart, so this one is on you.
   A `PreToolUse` hook on `ExitPlanMode` enforces the section and the verdict line and will deny
   the call otherwise; both reviewers are read-only and never write to the plan file themselves.
-- Keep the plan file scannable: name the files to change, reuse what already exists with
-  `path:line`, and leave out alternatives you rejected.
+- The plan file has two readers. `## Steps` is for the human: one terse line per step, naming the
+  file it touches, no alternatives, no rationale. `## Build brief` is for `build` and `test-runner`:
+  wrapped in `<details><summary><strong>Build brief</strong></summary>` so it stays collapsed, and
+  carrying the full detail — `path:line`, current-code excerpts and what they become, new
+  signatures, call sites, and the test brief. Never drop the brief to make the file shorter; the
+  brevity is the human's section only.
 
 ## Git attribution
 
