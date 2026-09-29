@@ -28,6 +28,7 @@ jobs/
 daemon/
 daemon-auth-*
 statsig/
+telemetry/
 ide/
 downloads/
 backups/
@@ -40,7 +41,13 @@ local/
 # Generated status/caches
 stats-cache.json
 gh-pr-status-cache.json
-policy-limits.json
+policy-limits.json*
 remote-settings.json
 .last-cleanup
 .last-update-result.json
+
+# Skills — publish only code-review. Everything else in ~/.claude/skills is
+# company-internal (twg*), vendored (synced/) or third-party (stop-slop/).
+# Whitelist, not blacklist: a newly installed skill must stay out by default.
+skills/*
+!skills/code-review/
