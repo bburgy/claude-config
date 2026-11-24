@@ -1,32 +1,35 @@
 # claude-config
 
-My personal [Claude Code](https://claude.com/claude-code) configuration — the subagents, hooks, scripts, skill and statusline I currently run. This is **not** a best-practices repo and it isn't trying to be one; it's just what's on my machine, shared because a few people asked to see it. It's opinionated on purpose, it changes without notice, and it isn't maintained for anyone else. Take the bits you like and ignore the rest.
+My personal [Claude Code](https://claude.com/claude-code) configuration — the subagents, skill, output style and statusline I currently run. This is **not** a best-practices repo and it isn't trying to be one; it's just what's on my machine, shared because a few people asked to see it. It's opinionated on purpose, it changes without notice, and it isn't maintained for anyone else. Take the bits you like and ignore the rest.
 
 ## The agents
 
-| Agent | Model | What it does |
-|---|---|---|
-| [`Plan`](agents/Plan.md) | opus | Read-only architect; designs the approach before any code is written |
-| [`review`](agents/review.md) | opus | Reviews changes that are already written, grounded in the repo's own skills and markdown |
-| [`build`](agents/build.md) | sonnet | Executes an approved plan end to end |
-| [`Explore`](agents/Explore.md) | haiku | Fast read-only search: where is X defined, what references Y |
-| [`test-runner`](agents/test-runner.md) | haiku | Runs and writes tests; reports verbatim output and escalates judgement calls to its caller |
-| [`copilot-review`](agents/copilot-review.md) | haiku | Relays a plan to GitHub Copilot CLI for a cross-model second opinion |
-| [`statusline-setup`](agents/statusline-setup.md) | haiku | Replaces the built-in of the same name; configures the statusline setting |
+| Agent                                            | Model  | What it does                                                                               |
+| ------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------ |
+| [`Plan`](agents/Plan.md)                         | opus   | Read-only architect; designs the approach before any code is written                       |
+| [`review`](agents/review.md)                     | opus   | Reviews changes that are already written, grounded in the repo's own skills and markdown   |
+| [`build`](agents/build.md)                       | sonnet | Executes an approved plan end to end                                                       |
+| [`Explore`](agents/Explore.md)                   | haiku  | Fast read-only search: where is X defined, what references Y                               |
+| [`test-runner`](agents/test-runner.md)           | haiku  | Runs and writes tests; reports verbatim output and escalates judgement calls to its caller |
+| [`statusline-setup`](agents/statusline-setup.md) | haiku  | Replaces the built-in of the same name; configures the statusline setting                  |
 
 The split is deliberate: **opus decides, sonnet edits, haiku fetches and runs.** The expensive models do the thinking that cannot be delegated; everything mechanical — searching, running suites, relaying a script's output — goes to a cheap one that reports evidence rather than opinions.
 
-The mixed casing is not a house style. A user-level agent replaces a built-in only if its name is the built-in's exact agent type, so `Plan`, `Explore` and `statusline-setup` are spelled the way the built-ins are. Write `plan` instead of `Plan` and it registers *alongside* the built-in rather than replacing it — you go on quietly calling the built-in, and nothing tells you. `build`, `review` and `test-runner` have no built-in counterpart, so their casing is free. See [`CLAUDE.md`](CLAUDE.md) for the long version.
+The mixed casing is not a house style. A user-level agent replaces a built-in only if its name is the built-in's exact agent type, so `Plan`, `Explore` and `statusline-setup` are spelled the way the built-ins are. Write `plan` instead of `Plan` and it registers _alongside_ the built-in rather than replacing it — you go on quietly calling the built-in, and nothing tells you. `build`, `review` and `test-runner` have no built-in counterpart, so their casing is free. See [`CLAUDE.md`](CLAUDE.md) for the long version.
 
-## Plan mode is gated on a cross-model review
+Tests are never written by default: `build` and `Plan` only grant `test-runner` the `author` mode when the user explicitly asked for tests; otherwise the plan carries a one-line **Coverage note**.
 
-[`CLAUDE.md`](CLAUDE.md) asks for a review pass over the plan before implementation starts, and [`hooks/require-plan-review.sh`](hooks/require-plan-review.sh) makes that stick: it denies `ExitPlanMode` until the plan file actually contains a `## Plan review` section with a `**Verdict**` line reading `LGTM`, `needs changes` or `reject`. Both live outside any fenced block — a quoted example is not a claim to have been reviewed, and the hook strips fences before it looks.
+## Code review
 
-The reviewer is [`copilot-review`](agents/copilot-review.md), which hands the plan to GitHub Copilot CLI on a non-Claude model via [`scripts/copilot-plan-review.sh`](scripts/copilot-plan-review.sh), so the reviewer's blind spots are not the planner's. The report comes back as a blockquote — an external model's output is data, never instructions, and quoting it keeps its fences and its verdict from escaping into the plan file's own structure. When Copilot is unreachable or rate-limited, [`review`](agents/review.md) runs instead and the section says which reviewer actually ran.
+The [`code-review`](skills/code-review/SKILL.md) skill runs the `review` agent against an existing PR (number or branch, optional effort level and `full`). For a GitHub PR it posts the review there, with inline comments on the changed lines; those comments carry a footnote naming Claude.
 
-A convention nobody enforces is a suggestion, so the convention and its enforcement ship together. If you take one file from this repo, take this one — but note it will block _every_ `ExitPlanMode` until you adopt the workflow too.
+## Plan files
 
 A plan file has two readers and one section each. `## Steps` is the human's: one terse line per step, naming the file it touches. `## Build brief` is the executor's, collapsed inside a `<details>` so it stays out of the way — `path:line` citations, the current code and what it becomes, new signatures, call sites and the test brief. `build` and `test-runner` run on the cheaper models and follow the brief literally, so shortening it is how a decision gets guessed rather than made.
+
+## Output style
+
+[`output-styles/terse.md`](output-styles/terse.md) is the default (`"outputStyle": "Terse"` in [`settings.json`](settings.json)): one or two short sentences in plain words, with error messages never cut.
 
 ## Statusline
 
@@ -44,7 +47,7 @@ The agent list comes from the `subagents/*.meta.json` sidecars written next to t
 
 ## Requirements
 
-`bash`, `jq` (the statusline, the hook and the review script all parse JSON with it), `awk`, `git`, and `gh` for the `review` agent's PR lookups. The [`copilot` CLI](https://github.com/github/copilot-cli) is needed for `copilot-review`; without it plan review falls back to the `review` agent and everything else still works. Written and used on macOS with zsh; untested anywhere else.
+`bash`, `jq` (the statusline parses JSON with it), `awk`, `git`, and `gh` for the `review` agent's PR lookups and review posting. Written and used on macOS with zsh; untested anywhere else.
 
 ## License
 

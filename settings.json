@@ -4,26 +4,21 @@
     "pr": "",
     "sessionUrl": false
   },
-  "model": "claude-opus-5",
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/require-plan-review.sh",
-            "timeout": 10
-          }
-        ]
-      }
+  "permissions": {
+    "ask": [
+      "Bash(az:*)",
+      "Bash(gh:*)"
     ]
   },
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh",
     "padding": 0,
     "refreshInterval": 60
+  },
+  "enabledPlugins": {
+    "lot-map@lot-map": true
   },
   "extraKnownMarketplaces": {
     "dotnet-agent-skills": {
@@ -31,12 +26,36 @@
         "source": "git",
         "url": "https://github.com/dotnet/skills.git"
       }
+    },
+    "lot-map": {
+      "source": {
+        "source": "github",
+        "repo": "alexeyw/lot-map"
+      }
     }
   },
-  "outputStyle": "Concise",
+  "outputStyle": "Terse",
   "modelSettings": {
     "claude-opus-5": {
-      "effortLevel": "medium"
+      "effortLevel": "high"
+    }
+  },
+  "pluginConfigs": {
+    "lot-map@lot-map": {
+      "options": {
+        "language": "en",
+        "hookRecords": false,
+        "hookReasons": false,
+        "guardedHooks": true,
+        "subagentNames": true,
+        "contextCost": false,
+        "theme": "auto",
+        "background": "solid",
+        "layout": "you-top",
+        "motion": "full",
+        "textSize": "footnote",
+        "terminalView": "braille"
+      }
     }
   },
   "voice": {
@@ -45,5 +64,7 @@
   },
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
-  "voiceEnabled": true
+  "switchModelsOnFlag": true,
+  "voiceEnabled": true,
+  "effortLevel": "high"
 }

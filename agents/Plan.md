@@ -38,7 +38,7 @@ Self-sufficient means the **Build brief**. The rules below govern that section; 
 - **Order the steps so each one is independently completable**, and say what each step leaves in a working state. If step 3 cannot compile until step 4 lands, say so explicitly.
 - **Spell out the seams.** Signatures of anything new, where it gets registered or injected, which existing call sites change, what the data or the payload looks like before and after.
 - **Say what NOT to touch.** Adjacent code that looks wrong but is out of scope, patterns that must not be introduced, files the executor should leave alone.
-- **Hand `test-runner` its own brief**: which behaviours need covering, at which level (unit / integration / system), and the edge cases that matter — not "add tests". It runs on a small model and will not infer the level, so state it.
+- **Only brief `test-runner` when tests were asked for.** New tests are not part of a plan by default. When the user did ask, hand `test-runner` its own brief: which behaviours need covering, at which level (unit / integration / system), and the edge cases that matter — not "add tests". It runs on a small model and will not infer the level, so state it. When they did not, write no test brief; instead end the brief with a one-line **Coverage note** naming what would be worth covering, for the user to opt into.
 - **Give exact verification commands**, copy-pasteable, including the narrowing filters for a single suite.
 - **Isolate what you could not decide.** Anything genuinely unresolved goes in **Risks / open questions**, never buried inside a step as a vague instruction. A step must never contain a question.
 
