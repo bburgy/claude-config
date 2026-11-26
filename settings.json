@@ -6,8 +6,44 @@
   },
   "permissions": {
     "ask": [
-      "Bash(az:*)",
-      "Bash(gh:*)"
+      "Bash(az *)"
+    ],
+    "deny": [
+      "Bash(chmod -R *)",
+      "Bash(chown -R *)",
+      "Bash(dd *)",
+      "Bash(git branch -D *)",
+      "Bash(git clean -df*)",
+      "Bash(git clean -dxf*)",
+      "Bash(git clean -f*)",
+      "Bash(git clean -xdf*)",
+      "Bash(git clean -xf*)",
+      "Bash(git push * --force *)",
+      "Bash(git push * --force)",
+      "Bash(git push * -f *)",
+      "Bash(git push * -f)",
+      "Bash(git push --force *)",
+      "Bash(git push --force)",
+      "Bash(git push -f *)",
+      "Bash(git push -f)",
+      "Bash(git reset * --hard*)",
+      "Bash(git reset --hard*)",
+      "Bash(mkfs*)",
+      "Bash(rm --recursive *)",
+      "Bash(rm -R *)",
+      "Bash(rm -Rf *)",
+      "Bash(rm -f -r *)",
+      "Bash(rm -fR *)",
+      "Bash(rm -fr *)",
+      "Bash(rm -r *)",
+      "Bash(rm -r -f *)",
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Bash(sudo)",
+      "Bash(terraform apply * -destroy*)",
+      "Bash(terraform apply -destroy*)",
+      "Bash(terraform destroy *)",
+      "Bash(terraform destroy)"
     ]
   },
   "model": "opus",
@@ -21,12 +57,6 @@
     "lot-map@lot-map": true
   },
   "extraKnownMarketplaces": {
-    "dotnet-agent-skills": {
-      "source": {
-        "source": "git",
-        "url": "https://github.com/dotnet/skills.git"
-      }
-    },
     "lot-map": {
       "source": {
         "source": "github",
@@ -35,11 +65,6 @@
     }
   },
   "outputStyle": "Terse",
-  "modelSettings": {
-    "claude-opus-5": {
-      "effortLevel": "high"
-    }
-  },
   "pluginConfigs": {
     "lot-map@lot-map": {
       "options": {
@@ -62,9 +87,7 @@
     "enabled": true,
     "mode": "hold"
   },
-  "skipWorkflowUsageWarning": true,
   "theme": "auto",
   "switchModelsOnFlag": true,
-  "voiceEnabled": true,
   "effortLevel": "high"
 }

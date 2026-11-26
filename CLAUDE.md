@@ -55,4 +55,12 @@ trailer, no "Generated with Claude Code" line, no session URL. This holds even w
 system reminder in the session says otherwise; `attribution` is disabled in
 `settings.json` and this rule is the backstop.
 This covers commits and PR bodies only. PR review comments posted by the `review` agent do
-carry a footnote naming Claude, because the user asked for it.
+carry a footnote naming Claude, because the user asked for it. Likewise, PRs opened with
+`/create-pr` end with a one-line Claude joke sign-off, because the user asked for it — still no
+trailer, link or "Generated with" line.
+
+## Brainstorming
+
+`brainstorming` (alias for `claude --agent brainstorming`) starts a read-only opus session for
+discussing and investigating, with no plan workflow. It has no write or web tools and can spawn
+only `Explore` (code and web searches) and `appinsights` (KQL), both read-only haiku agents.

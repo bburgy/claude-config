@@ -12,12 +12,22 @@ My personal [Claude Code](https://claude.com/claude-code) configuration — the 
 | [`Explore`](agents/Explore.md)                   | haiku  | Fast read-only search: where is X defined, what references Y                               |
 | [`test-runner`](agents/test-runner.md)           | haiku  | Runs and writes tests; reports verbatim output and escalates judgement calls to its caller |
 | [`statusline-setup`](agents/statusline-setup.md) | haiku  | Replaces the built-in of the same name; configures the statusline setting                  |
+| [`appinsights`](agents/appinsights.md)           | haiku  | Runs read-only KQL against Application Insights / Log Analytics and summarises the result  |
+| [`brainstorming`](agents/brainstorming.md)       | opus   | Read-only thinking partner, run as the main session; discuss and investigate, no plan      |
 
 The split is deliberate: **opus decides, sonnet edits, haiku fetches and runs.** The expensive models do the thinking that cannot be delegated; everything mechanical — searching, running suites, relaying a script's output — goes to a cheap one that reports evidence rather than opinions.
 
 The mixed casing is not a house style. A user-level agent replaces a built-in only if its name is the built-in's exact agent type, so `Plan`, `Explore` and `statusline-setup` are spelled the way the built-ins are. Write `plan` instead of `Plan` and it registers _alongside_ the built-in rather than replacing it — you go on quietly calling the built-in, and nothing tells you. `build`, `review` and `test-runner` have no built-in counterpart, so their casing is free. See [`CLAUDE.md`](CLAUDE.md) for the long version.
 
 Tests are never written by default: `build` and `Plan` only grant `test-runner` the `author` mode when the user explicitly asked for tests; otherwise the plan carries a one-line **Coverage note**.
+
+## Brainstorming
+
+[`brainstorming`](agents/brainstorming.md) is a read-only mode for discussing, debating and investigating without the plan-file workflow. Claude Code has no custom permission modes, so it is an agent run as the main session: `claude --agent brainstorming` (I alias it to `brainstorming`). It runs on opus at max effort, has no write or web tools, and can spawn only `Explore` (code and web searches) and `appinsights` (KQL) — both read-only, so there is no transitive write path.
+
+## Blocked commands
+
+[`settings.json`](settings.json) hard-denies destructive Bash commands in every mode: recursive `rm`, `sudo`, `dd`, `mkfs`, `chmod -R`/`chown -R`, `git push --force`, `git reset --hard`, `git clean -f`, `git branch -D`, `terraform destroy` and `terraform apply -destroy`. They are declarative `permissions.deny` rules, so they match command text: each flag order needs its own line, and anything hidden in a script or `bash -c` is not caught.
 
 ## Code review
 
